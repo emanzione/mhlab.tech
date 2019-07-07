@@ -1,0 +1,84 @@
+// @import "_variables";
+@import "externalDependencies";
+@import "fontface";
+
+.bilberry-hugo-theme {
+    background-color: $page-background-color;
+    font-family: $content-font;
+    color: $text-color;
+    font-size: 1.6em;
+
+    h1, h2, h3, h4, h5, h6, .title, .subtitle {
+        font-family: $headline-font;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            color: $highlight-color;
+        }
+    }
+
+    .hljs {
+        padding: 0.75em;
+        font-size: 0.9em;
+    }
+
+    .container {
+        width: $site-width;
+        max-width: 100%;
+    }
+
+    .mhlab-button {
+        background-color: $highlight-color;
+        padding: 0.5rem;
+        border-radius: 4px;
+        border-bottom: 3px solid #ae1d1d;
+        color: white !important;
+    }
+
+    @import "topnav";
+
+    @import "header";
+
+    @import "main";
+
+    @import "articles";
+
+    @import "pagination";
+
+    @import "footer";
+
+	@import "responsive";
+	
+	footer {
+		border-top: 3px solid #222;
+		border-bottom: 3px solid #222;
+		background-color: #222;
+	}
+
+	footer .container strong {
+		color: #eee;
+	}
+
+	.credits {
+		background-color: #222;
+	}
+
+	footer .container ul a:hover {
+		left: 10px;
+		color: $highlight-color;
+	}
+
+	footer .container ul li {
+		border-bottom: 1px solid #444;
+	}
+
+	footer .container {
+		width: 1000px;
+		padding: 4rem 4rem;
+	}
+}

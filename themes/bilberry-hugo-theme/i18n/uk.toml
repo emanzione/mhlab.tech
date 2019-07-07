@@ -1,0 +1,33 @@
+[categories]
+other = "Категорії"
+
+[authors]
+other = "Автори"
+
+[tags]
+other = "Теги"
+
+[socialMedia]
+other = "Соціальні мережі"
+
+[latestPosts]
+other = "Останні повідомлення"
+
+[search]
+other = "Пошук ..."
+
+[noSearchResults]
+other = "Нічого не знайдено."
+
+[olderPosts]
+other = "Старі повідомлення"
+
+[newerPosts]
+other = "Нові повідомлення"
+
+[continueReading]
+other = "Далі"
+
+[otherLanguages]
+other = "Інші мови"
+

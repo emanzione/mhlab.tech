@@ -1,0 +1,13 @@
+<a class="bubble" href="{{ .URL }}">
+    <i class="fa fa-fw {{or .Params.icon "fa-quote-right" }}"></i>
+</a>
+
+<article class="quote">
+    {{ with .Params.featuredImage }}
+        <img src="{{ . }}" class="featured-image" alt="">
+    {{ end }}
+    <blockquote>
+        {{ .Content }}
+        <cite><a href="{{ (print "/author/" .Params.author | urlize) | relLangURL }}">{{ .Params.author }}</a></cite>
+    </blockquote>
+</article>

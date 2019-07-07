@@ -1,0 +1,20 @@
+{{ define "main" }}
+
+{{ $paginator := .Paginate (where .Site.RegularPages "Type" "ne" "page" | intersect (where .Site.RegularPages "Params.excludefromindex" "==" nil)) (index .Site.Params "paginate" | default 7) }}
+
+    {{ if .Site.Params.pinnedPost }}
+        {{ if (and .Site.Params.pinOnlyToFirstPage (ne $paginator.PageNumber 1)) }}
+            {{/* Do nothing if the pinOnlyToFirstPage flag is set and we're not on page 1. */}}
+        {{else}}
+            {{ range first 1 (where .Data.Pages "URL" .Site.Params.pinnedPost) }}
+                {{ partial "article-wrapper" . }}
+            {{end}}
+        {{end}}
+    {{end}}
+
+    {{ range $paginator.Pages }}
+        {{ partial "article-wrapper" . }}
+    {{ end }}
+
+    {{ partial "paginator" . }}
+{{ end }}
