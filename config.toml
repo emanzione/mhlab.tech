@@ -1,6 +1,6 @@
 title = "mhlab"
 # Add an trailing slash to ensure that all fonts render correctly.
-baseURL = "http://localhost/mhlab/mhlab/public/"#"http://mhlab.tech/"#
+baseURL = "http://mhlab.tech/"#"http://localhost/mhlab/mhlab/public/"#
 theme = "bilberry-hugo-theme"
 
 enableRobotsTXT = true
