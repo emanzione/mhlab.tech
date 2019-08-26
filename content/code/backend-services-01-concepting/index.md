@@ -1,6 +1,6 @@
 ---
 title: "Backend Services - Concepting"
-date: 2019-06-29
+date: 2021-06-29
 
 categories: ['Game Development', 'Backend']
 tags: ['multiplayer', 'backend', 'auth']

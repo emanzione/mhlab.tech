@@ -1,6 +1,6 @@
 ---
 title: "Backend Services - Auth"
-date: 2019-07-06
+date: 2021-07-06
 
 categories: ['Game Development', 'Backend']
 tags: ['multiplayer', 'backend', 'auth']
@@ -23,5 +23,18 @@ So let's apply a little bit the *"divide et impera"* approach. The Frontend Serv
 The first block I want to build is certainly the __*Authentication Service*__: I will treat it in this article. Every request will need to be tested against it, in order to be further processed.
 For the specific implementation I was thinking about a simple HTTP API, with simple functionalities:
 
-- __login__: the user's session is started and initialized if the passed username and password are correct
+- __login__: the user's session is started and initialized if the passed username and password are correct. The return value is a unique token
+- __logout__: the user's session is destroyed and the token is invalidated
+- __validate token__: the passed token is tested to see if it is associated to any valid session
 
+That's good for now, it seems to be a nice starting point.
+
+### Auth Service
+
+The Auth Service is going to be built with ASP.NET Core and C#, a simple web API. Also, I will try to keep it to the bare minimum to work properly, without fancy or complicated concepts. I will work with a lot of tiny projects with some shared libraries, to better isolate functionalities and concepts. Let's create one.
+
+### Login
+
+The first functionality we want to expose is certainly the login.
+
+serviziotecnico@axitea.it
