@@ -1,70 +1,101 @@
 ---
-title: "Backend Services - Concepting"
-date: 2021-06-29
+title: "Backend Services for Games - Concepting"
+date: 2020-06-29
 
 categories: ['Game Development', 'Backend']
-tags: ['multiplayer', 'backend', 'auth']
+tags: ['multiplayer', 'backend for games', 'auth']
 author: "Emanuele Manzione"
 noSummary: false
 
 resizeImages: false
 ---
-During my career I often worked as backend developer for multiple games and it is a pretty interesting matter. Recently I started to work on a game of mine with some other fellows, the game is named "__*Duke it out in the arena!*__": I will certainly write something about it later this year. However, for this game I am dealing with *(do you dare to guess?)* the backend architecture.
+During my career I often worked as backend developer for multiple games and I have to say I liked it.
 
-Because of the game's multiplayer nature, we will need common services like auth, chat, lobbies, matchmaking, storaging, etc.
+I find the whole thing really interesting: it offers nice challenges and forces you to learn a lot of concepts, in order to be effective.
 
-I find the whole thing really interesting, for this reason I decided to describe my process with some articles on this blog, with this new series. It could be useful for readers who want to learn, but in the end it will surely be useful for me, in order to fix ideas and to collect feedback from other developers about my workflow.
+For this reason I decided to describe my process with some articles on this blog, with this new series. It could be useful for readers who want to learn, but in the end it will surely be useful for me, in order to fix ideas and to collect feedback from other developers about my workflow.
+
+So let's start.
 
 ### Composition of a backend architecture
 
-My main approach when it comes to build a backend from scratches is to split functionalities in multiple, standalone services that can operate on their own, independently, with minimal dependencies among each others.
+My first step when it comes to build something so massive from scratch is to identify requirements and constraints for the architecture I am going to build and functionalities the game needs.
 
-So let's proceed by identifying common functionalities I surely need (probably in every game's backend):
+So let's proceed by identifying them.
 
-- I need a way to __*authenticate*__ an user
-- users' requests need to be __*valid*__, so I need to craft a system to ensure all requests come from the authenticated user before any further processing
-- I need a way to __*log*__ what happens in the whole architecture during runtime: errors, exceptions, debug data, etc. all in a convenient place like a dashboard
-- I need a way to __*store*__ users' data, in a generic way. Every subservice can throw at it arbitrary data to store (and can retrieve it too) at any moment
-- I need a way to __*describe a subservice*__ and its logic to compose the real behavior of my backend
-- the whole thing must be __*scalable*__: it means the architecture has to be able to correctly manage any kind of load
+##### Requirements and constraints
 
-The previous list represents the base functionalities of my architecture. Something I will reuse over all my backend projects.
+- __*Logging*__: storing a trace of what happens in the whole architecture: errors, warnings, unexpected situations, transactions, etc. Everything needed to understand what is going on in the whole system.
+- __*Metrics*__: collecting metrics from the whole architecture: resources usage, load, responsiveness, average response times, errors rateo, etc. Everything needed to understand how the whole system is performing.
+- __*Scalability*__: the architecture should manage any load without going down or degrading.
+- __*Decoupling*__: all subsystems should be independent from each others. This ensures the maximum modularity and...
+- __*Fault tolerance*__: the system should be able to recover from an error and/or from the failure of a subsystem without impacting other subsystems.
 
-But alone those functionalities do not make our architecture usable for a game. I need to add subservices in order to define the actual business logic of the whole thing. Let's see what I need:
+##### Functionalities
 
-- a __*chat*__ subservice. Every respectable multiplayer game has a chat!
-- a __*lobby*__ subservice. Users can group together to join the game, basically
-- a __*matchmaking*__ subservice. It manages the matches composition, matching together lobbies with some (currently undefined) criteria
+- __*Authentication*__: the players must be able to authenticate. Ideally this exposes an account system but also a way to authenticate with Facebook, Twitter, etc.
+- __*Chat*__: all respectable multiplayer games have a chat!
+- __*Matchmaking*__: group players together (1 or more), match groups together to compose matches.  
 
-For each previously listed point I will go to create an article to describe my implementation.
+For each previously listed point I will write an article to discuss a possible implementation.
+
+And now let's sketch out something that can fit with our plans!
 
 ### Sketching out the architecture
 
-Let's sketch out something that can fit with our plans! Currently we know users will send messages we have to process to alter the internal state of our game.
-Before processing them, we want to be sure that the sender is authenticated and the message is well-formed (*validation*). A specialized subservice can deal with this validation step: I called it __*Frontend Service*__. It just collect messages from users and validates them. Neat.
-After this step we know that the message is valid and we are ready to push it deeper in our architecture, by routing it to the correct subservice. Subservices will process the data, store information if needed and report back the result.
+How to organize and expose all those functionalities? How to build a proper architecture that can support our needs?
 
-> It is important noting that having a frontend service to manage incoming messages has another hidden benefit: you can decouple the protocol you use to communicate in your architecture from the protocol your clients use to connect and send messages. Example: your clients could use Websocket to establish the connection and to exchange data with the Frontend Service, and your backend architecture can use HTTP and TCP/UDP to communicate internally.
+I decided to follow the __*microservices architectural pattern*__. Basically the whole backend will be made of a collection of independent, loosely coupled, self-contained micro applications (micro services) that will deal with a specific part of the business logic.
 
-But don't forget about another constraint we want to satisfy: the __*scalability*__. The whole system has to work under any load. We can't say: *"hey, you can't connect, we are already managing 10000 users. Come back in an hour or two"*. Not in my backend!
+This decision brings to the table some __*advantages*__:
 
-Of course I want to consider some scenarios: what if our subservices can't manage the load? Or our frontend service goes down on its knees because of the traffic burst? I need __*multiple*__ frontend services, generally I need __*N*__ subservices instances that can perform the same task and share the load dynamically. And they have to act like a single one: if instance Y changes the state of my game, other instances have to be aware of this.
+- we can use different technologies for different services. This means you can pick the best tech for a specific task without affecting other services.
+- smaller, independent applications are:
+  - easier to develop
+  - easier to test
+  - easier to understand
+- deployment is easier, it does not affect other services so you can push bugfixes easier
 
-It should look like this:
+but also some __*disadvantages*__:
 
-![Backend_Architecture](simple.png "Backend architecture")
+- debugging interservices operations could be hard
+- services need a way to communicate with each others (this means an additional layer of complexity)
+- the base resources requirement is higher (multiple instances, so multiple host runtimes, etc)
 
-So now I have multiple instances of everything, but something is still missing. Something has to manage all these instances, something has to __*orchestrate*__ the whole architecture. That's why I add another specialized subservice: I named it __*Orchestrator Service*__. Its role is just to keep track of which instances are currently spawned, their load, their details. Not only: it has to be able to spawn instances when needed or destroy them when there is no load. Also, it offers an API to retrieve which service is available to be connected to.
-Example: I am the player, I want to connect to a frontend service. I ping an endpoint to retrieve the available endpoint to connect to. Not only, this can be used internally by the subservices if they need to communicate with another one.
+Another interesting thing to note is: we don't want to expose our subsystems to the outer world. Ideally we want to isolate them, so that clients cannot send requests directly. This is for two reasons:
 
-Here it is:
+- malicious users cannot try to exploit the internal API (generally, they should not be able to mess with it)
+- the client don't need to know the address of each service we deploy
 
-![Backend_Architecture](orchestrator.png "Backend architecture")
+Also, it could be desiderable assuming that the internal API will only receive already validated and authorized requests, in this way we don't need to duplicate validation and authorization logic on every service.
 
-### Implementation
+For satisfying these needs the only service we publicly expose will be the __*API Gateway*__.
 
-I will implement this architecture on __*.NET Core*__ with __*C#*__. I will push the project on GitHub as independent packages since it will be highly modular.
-Probably I will also experiment with Azure this time: they have a nice tooling for backend development!
+It just collects messages from users, validates them (checking they are well-formed, they contain something in particular, etc), authorizes them (checking they come from an authorized user). Neat.
+
+After this step we know that the message is valid and we are ready to push it deeper in our architecture, by routing it to the correct service. Other services will process the data, store information if needed and report back the result.
+
+> It is important to note that having an API Gateway to manage incoming messages has an additional hidden benefit: you can *decouple* the protocol you use to communicate among your internal architecture from the protocol your clients use to connect and send messages. Example: your clients could use __*Websocket*__ or __*HTTP*__ to establish the connection and to exchange data with the API Gateway, and your backend architecture can use __*TCP*__ or __*UDP*__ to communicate internally.
+
+But don't forget about another constraint we want to satisfy: the __*scalability*__. The whole system has to work under any load. We can't say: *"hey, you can't connect, we are already managing 10,000 users. Come back in an hour or two"*. Not in my backend!
+
+### Orchestrator
+
+What if our services can't manage the load? Or our API Gateway goes down on its knees because of the traffic burst? I would need __*multiple*__ API Gateway on different servers. Generally speaking, I would need __*N*__ service instances, on different physical servers, that can perform the same tasks and share the load dynamically. And they have to act like a single one: if instance Y changes the state of my game, other instances have to be aware of this.
+
+Now we have multiple instances of everything, but something is still missing. Something must manage all these instances, something must __*orchestrate*__ the whole architecture. Its role should be to keep track of which instances are currently spawned, their load, their details. Not only: it has to be able to spawn instances when needed or destroy them when there is no load.
+
+You can write your own solution or you can simply use something already battle-tested like __*Kubernetes*__ or __*Docker Swarm*__.
+
+The architecture at this point should look like this:
+
+![Backend_Architecture](architecture.png "Backend architecture")
+
+### Final notes
+
+I usually work with __*.NET Core*__, so expect to see a lot of __*C#*__: for this project it will be my tech of choice.
+
+Every service will be packaged in a __*Docker container*__.
 
 I hope it was clear and straightforward.
-In the next article I will start to implement the first service: the Auth.
+In the next article I will start to implement the first service.

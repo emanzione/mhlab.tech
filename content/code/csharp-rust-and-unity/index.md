@@ -14,7 +14,7 @@ Rust is a safe and fast low-level language and recently I got enthusiastic about
 
 #### Getting started
 
-I assume that you already know a little bit how to work with Rust and Cargo, so I will not speak about how to install the compiler and its environment.
+I assume that you already know a little bit how to work with Rust and Cargo, so I will not speak about how to install the compiler and its environment. Also, I am working on Windows: the approach may be different for other platforms.
 
 I create a new lib project with `cargo init --lib` and specify in Cargo.toml that I want a dynamic library as output:
 
@@ -23,6 +23,8 @@ I create a new lib project with `cargo init --lib` and specify in Cargo.toml tha
 name = "unity_rust"
 crate-type = ["dylib"]
 ```
+
+> On macOS you must use `crate-type = ["cdylib"]`. If not it will complain about missing libc.
 
 To know more about this topic, click [here](https://doc.rust-lang.org/reference/linkage.html).
 
@@ -47,7 +49,11 @@ Now I run `cargo build` or `cargo build --release` and the compiled library will
 
 #### On Unity side
 
-I create a `Plugins` folder in the Unity project and put there the compiled native DLL. So I create the C# interop code:
+I create a `Plugins` folder in the Unity project and put there the compiled native DLL.
+
+> If you are on macOS, you must change the extension of the compiled library from `.dylib` to `.bundle` before putting it in the `Plugins` folder.
+
+Then I create the C# interop code (you can put this `.cs` file wherever you prefer in the Unity Project):
 
 ```csharp
 using System.Runtime.CompilerServices;

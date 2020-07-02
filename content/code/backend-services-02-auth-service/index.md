@@ -1,6 +1,6 @@
 ---
 title: "Backend Services - Auth"
-date: 2021-07-06
+date: 2030-07-06
 
 categories: ['Game Development', 'Backend']
 tags: ['multiplayer', 'backend', 'auth']
@@ -36,5 +36,3 @@ The Auth Service is going to be built with ASP.NET Core and C#, a simple web API
 ### Login
 
 The first functionality we want to expose is certainly the login.
-
-serviziotecnico@axitea.it
