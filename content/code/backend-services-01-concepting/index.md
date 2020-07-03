@@ -19,14 +19,14 @@ So let's start.
 
 ### Composition of a backend architecture
 
-My first step when it comes to build something so massive from scratch is to identify requirements and constraints for the architecture I am going to build and functionalities the game needs.
+When it comes to building something so massive from scratch, my first step is to identify requirements and constraints for the architecture that I am going to build for, as well as the functionalities needed for the game.
 
 So let's proceed by identifying them.
 
 ##### Requirements and constraints
 
 - __*Logging*__: storing a trace of what happens in the whole architecture: errors, warnings, unexpected situations, transactions, etc. Everything needed to understand what is going on in the whole system.
-- __*Metrics*__: collecting metrics from the whole architecture: resources usage, load, responsiveness, average response times, errors rateo, etc. Everything needed to understand how the whole system is performing.
+- __*Metrics*__: collecting metrics from the whole architecture: resources usage, load, responsiveness, average response times, error rate, etc. Everything needed to understand how the whole system is performing.
 - __*Scalability*__: the architecture should manage any load without going down or degrading.
 - __*Decoupling*__: all subsystems should be independent from each others. This ensures the maximum modularity and...
 - __*Fault tolerance*__: the system should be able to recover from an error and/or from the failure of a subsystem without impacting other subsystems.
@@ -65,7 +65,7 @@ but also some __*disadvantages*__:
 Another interesting thing to note is: we don't want to expose our subsystems to the outer world. Ideally we want to isolate them, so that clients cannot send requests directly. This is for two reasons:
 
 - malicious users cannot try to exploit the internal API (generally, they should not be able to mess with it)
-- the client don't need to know the address of each service we deploy
+- the client doesn't need to know the address of each service we deploy
 
 Also, it could be desiderable assuming that the internal API will only receive already validated and authorized requests, in this way we don't need to duplicate validation and authorization logic on every service.
 
