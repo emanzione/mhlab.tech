@@ -42,7 +42,7 @@ The main purpose of the Auth Service is allowing players to *(guess what)* authe
 
 - __*Register a new account*__: the player should be able to register a new account before being able to log in. This registration must be verified through email validation or social media (Facebook, Twitter, etc) login.
 - __*Authenticate*__: the player should be able to get an auth token by providing username and password.
-- __*Refresh the auth token*__: the player should be able to obtain a new auth token by proving the old one.
+- __*Refresh the auth token*__: the player should be able to obtain a new auth token by providing the old one.
 
 These are the main features for now, but they are not the only ones. But for now stick with me: we will add later additional ones if needed.
 
@@ -50,7 +50,7 @@ These are the main features for now, but they are not the only ones. But for now
 
 Normally the Authorization process is useful for all the applications that can interact with the backend: the game, the website, the mobile app, the store, etc. For this reason a good way to implement this service is on top of __HTTP__, as a __REST API__.
 
-Another important requirement is the documentation: the API surface should be easily usable by any other developer who wants to interact with it, so a documentation/reference is needed. [Swagger](https://swagger.io/) is a nice tool for this purpose and it comes with a useful integration for ASP.NET: [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).
+Another important requirement is the documentation: the API surface should be easily usable by any developer who wants to interact with it, so a documentation/reference is needed. [Swagger](https://swagger.io/) is a nice tool for this purpose and it comes with a useful integration for ASP.NET: [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).
 
 Also, remember that all services are [cloud-native](https://en.wikipedia.org/wiki/Cloud_native_computing) applications. This brings in some more requirements, in particular the fact it must horizontally scale. This means it needs to be stateless and multiple instances of this service could run concurrently in the architecture.
 
@@ -172,7 +172,7 @@ Aaaaand it's time for some theory.
 
 What's an `auth token`? I mentioned it very often in this article, but I didn't explain its meaning.
 
-You certainly noticed the `[Authorize]` and `[AllowAnonymous]` attributes in the previous code snippets. Well, in few words, normally API endpoints are protected by some authorization logic. This prevents unwanted usage, enhances security, etc. A lot of good things.
+You certainly noticed the `[Authorize]` and `[AllowAnonymous]` attributes in the previous code snippets. Well, in a few words, normally API endpoints are protected by some authorization logic. This prevents unwanted usage, enhances security, etc. A lot of good things.
 
 The `[Authorize]` attribute ensures that all endpoints in that class will require an authorization mechanism in order to be called.
 Of course, the Health endpoint could be called by unauthorized clients so I added the `[AllowAnonymous]` attribute.
